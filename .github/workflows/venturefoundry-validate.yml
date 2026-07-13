@@ -1,4 +1,4 @@
-name: VentureFoundry Pilot Validation
+name: VentureFoundry Platform Validation
 
 on:
   pull_request:
@@ -16,8 +16,11 @@ on:
 permissions:
   contents: read
 
+env:
+  CI_JWT_SECRET: ci-runtime-secret-with-more-than-thirty-two-characters
+
 jobs:
-  validate:
+  pilot-integrity:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -30,16 +33,146 @@ jobs:
           git fetch -q --depth=1 origin "${GITHUB_SHA}"
           git checkout -q FETCH_HEAD
 
-      - name: Run all integrity checks
+      - name: Validate pilot data and browser application
         shell: bash
         run: |
           set -euo pipefail
-          echo "=== VentureFoundry data and application validation ==="
           python3 venturefoundry-os/tools/validate_pilot.py
-          echo "=== JavaScript syntax ==="
           node --check venturefoundry-os/app/app.js
           node --check venturefoundry-os/app/service-worker.js
-          echo "=== JSON assets ==="
           python3 -m json.tool venturefoundry-os/app/data/pefy-gg-pilot.json > /dev/null
           python3 -m json.tool venturefoundry-os/app/manifest.webmanifest > /dev/null
-          echo "All VentureFoundry checks passed."
+
+  api-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      DATABASE_URL: postgresql://venturefoundry_app:test@localhost:5432/venturefoundry
+      VF_JWT_SECRET: ci-runtime-secret-with-more-than-thirty-two-characters
+      VF_DEV_AUTH_ENABLED: "true"
+      VF_DEV_DEFAULT_ROLES: executive_sponsor,portfolio_admin,risk_manager,auditor
+      VF_CORS_ORIGINS: http://localhost:8080
+    steps:
+      - name: Quiet repository checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init -q .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch -q --depth=1 origin "${GITHUB_SHA}"
+          git checkout -q FETCH_HEAD
+
+      - name: Install API and test dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -e "venturefoundry-os/platform/api[dev]"
+
+      - name: Validate Python runtime and contracts
+        run: |
+          python3 -m compileall -q venturefoundry-os/platform/api/app
+          ruff check --select F venturefoundry-os/platform/api/app venturefoundry-os/platform/api/tests
+          pytest -q venturefoundry-os/platform/api/tests
+          python3 -c "from app.main import app; assert app.title == 'VentureFoundry OS API'"
+
+      - name: Validate Docker Compose contract
+        shell: bash
+        run: |
+          cat > /tmp/venturefoundry-ci.env <<'EOF'
+          VF_ENV=development
+          VF_API_HOST=0.0.0.0
+          VF_API_PORT=8000
+          VF_LOG_LEVEL=INFO
+          VF_CORS_ORIGINS=http://localhost:8080
+          POSTGRES_DB=venturefoundry
+          POSTGRES_USER=venturefoundry_admin
+          POSTGRES_PASSWORD=ci-admin-password
+          VF_DB_APP_USER=venturefoundry_app
+          VF_DB_APP_PASSWORD=ci-app-password
+          DATABASE_URL=postgresql://venturefoundry_app:ci-app-password@db:5432/venturefoundry
+          VF_JWT_ALGORITHM=HS256
+          VF_JWT_SECRET=ci-runtime-secret-with-more-than-thirty-two-characters
+          VF_JWT_AUDIENCE=venturefoundry-api
+          VF_JWT_ISSUER=pefy-gg-identity
+          VF_DEV_AUTH_ENABLED=true
+          VF_DEV_DEFAULT_USER_ID=00000000-0000-0000-0000-000000000101
+          VF_DEV_DEFAULT_ORG_ID=00000000-0000-0000-0000-000000000001
+          VF_DEV_DEFAULT_ROLES=executive_sponsor,portfolio_admin,risk_manager,auditor
+          VF_REQUEST_TIMEOUT_SECONDS=30
+          VF_DB_POOL_MIN=2
+          VF_DB_POOL_MAX=10
+          EOF
+          docker compose --env-file /tmp/venturefoundry-ci.env -f venturefoundry-os/platform/docker-compose.yml config -q
+
+  database-governance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: venturefoundry
+          POSTGRES_USER: venturefoundry_admin
+          POSTGRES_PASSWORD: ci-admin-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U venturefoundry_admin -d venturefoundry"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 15
+    steps:
+      - name: Quiet repository checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init -q .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch -q --depth=1 origin "${GITHUB_SHA}"
+          git checkout -q FETCH_HEAD
+
+      - name: Create constrained application role
+        shell: bash
+        run: |
+          docker run --rm --network host \
+            -e PGHOST=127.0.0.1 \
+            -e PGPASSWORD=ci-admin-password \
+            -e POSTGRES_USER=venturefoundry_admin \
+            -e POSTGRES_DB=venturefoundry \
+            -e VF_DB_APP_USER=venturefoundry_app \
+            -e VF_DB_APP_PASSWORD=ci-app-password \
+            -v "$PWD/venturefoundry-os/platform/database:/work:ro" \
+            postgres:16-alpine sh /work/000_create_app_role.sh
+
+      - name: Apply schema and security migrations
+        shell: bash
+        run: |
+          for migration in 001_init.sql 002_security_hardening.sql; do
+            docker run --rm --network host \
+              -e PGPASSWORD=ci-admin-password \
+              -v "$PWD/venturefoundry-os/platform/database:/work:ro" \
+              postgres:16-alpine psql \
+              -h 127.0.0.1 -U venturefoundry_admin -d venturefoundry \
+              -v ON_ERROR_STOP=1 -f "/work/${migration}"
+          done
+
+      - name: Apply least-privilege grants
+        shell: bash
+        run: |
+          docker run --rm --network host \
+            -e PGHOST=127.0.0.1 \
+            -e PGPASSWORD=ci-admin-password \
+            -e POSTGRES_USER=venturefoundry_admin \
+            -e POSTGRES_DB=venturefoundry \
+            -e VF_DB_APP_USER=venturefoundry_app \
+            -v "$PWD/venturefoundry-os/platform/database:/work:ro" \
+            postgres:16-alpine sh /work/999_grant_app_role.sh
+
+      - name: Execute RLS and governance acceptance tests
+        shell: bash
+        run: |
+          docker run --rm --network host \
+            -e PGPASSWORD=ci-app-password \
+            -v "$PWD/venturefoundry-os/platform/tests:/tests:ro" \
+            postgres:16-alpine psql \
+            -h 127.0.0.1 -U venturefoundry_app -d venturefoundry \
+            -v ON_ERROR_STOP=1 -f /tests/database_acceptance.sql
