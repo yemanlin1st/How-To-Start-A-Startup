@@ -4,7 +4,7 @@ from datetime import date, datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field
 
 Gate = Literal["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7"]
 RiskLevel = Literal["Low", "Moderate", "High", "Critical"]
@@ -187,8 +187,3 @@ class ErrorBody(BaseModel):
     request_id: str
     message: str
     detail: object | None = None
-
-
-@field_validator("portfolio_class", "owner_label", "current_decision", "next_evidence", mode="before")
-def strip_text(value: object) -> object:
-    return value.strip() if isinstance(value, str) else value
