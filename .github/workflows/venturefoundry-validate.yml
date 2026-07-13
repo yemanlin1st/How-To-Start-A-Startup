@@ -1,0 +1,44 @@
+name: VentureFoundry Pilot Validation
+
+on:
+  pull_request:
+    paths:
+      - "venturefoundry-os/**"
+      - ".github/workflows/venturefoundry-validate.yml"
+  push:
+    branches:
+      - master
+    paths:
+      - "venturefoundry-os/**"
+      - ".github/workflows/venturefoundry-validate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate pilot data and application integrity
+        run: python venturefoundry-os/tools/validate_pilot.py
+
+      - name: Validate JavaScript syntax
+        run: node --check venturefoundry-os/app/app.js
+
+      - name: Validate service worker syntax
+        run: node --check venturefoundry-os/app/service-worker.js
+
+      - name: Parse JSON assets
+        run: |
+          python -m json.tool venturefoundry-os/app/data/pefy-gg-pilot.json > /dev/null
+          python -m json.tool venturefoundry-os/app/manifest.webmanifest > /dev/null
