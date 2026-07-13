@@ -1,0 +1,12 @@
+{
+  "name": "VentureFoundry OS — PEFY-GG Pilot",
+  "short_name": "VentureFoundry",
+  "description": "Offline-first portfolio, evidence, risk and decision management for the PEFY-GG VentureFoundry pilot.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "lang": "en",
+  "orientation": "any"
+}

@@ -1,0 +1,74 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      VF_DB_APP_USER: ${VF_DB_APP_USER}
+      VF_DB_APP_PASSWORD: ${VF_DB_APP_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    volumes:
+      - venturefoundry_db:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d:ro
+    networks:
+      - backend
+
+  api:
+    build:
+      context: ./api
+    restart: unless-stopped
+    environment:
+      VF_ENV: ${VF_ENV}
+      VF_API_HOST: ${VF_API_HOST}
+      VF_API_PORT: ${VF_API_PORT}
+      VF_LOG_LEVEL: ${VF_LOG_LEVEL}
+      VF_CORS_ORIGINS: ${VF_CORS_ORIGINS}
+      DATABASE_URL: ${DATABASE_URL}
+      VF_JWT_ALGORITHM: ${VF_JWT_ALGORITHM}
+      VF_JWT_SECRET: ${VF_JWT_SECRET}
+      VF_JWT_AUDIENCE: ${VF_JWT_AUDIENCE}
+      VF_JWT_ISSUER: ${VF_JWT_ISSUER}
+      VF_DEV_AUTH_ENABLED: ${VF_DEV_AUTH_ENABLED}
+      VF_DEV_DEFAULT_USER_ID: ${VF_DEV_DEFAULT_USER_ID}
+      VF_DEV_DEFAULT_ORG_ID: ${VF_DEV_DEFAULT_ORG_ID}
+      VF_DEV_DEFAULT_ROLES: ${VF_DEV_DEFAULT_ROLES}
+      VF_REQUEST_TIMEOUT_SECONDS: ${VF_REQUEST_TIMEOUT_SECONDS}
+      VF_DB_POOL_MIN: ${VF_DB_POOL_MIN}
+      VF_DB_POOL_MAX: ${VF_DB_POOL_MAX}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/live', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - backend
+
+  web:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../app:/usr/share/nginx/html:ro
+      - ./web/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - backend
+
+volumes:
+  venturefoundry_db:
+
+networks:
+  backend:
+    driver: bridge

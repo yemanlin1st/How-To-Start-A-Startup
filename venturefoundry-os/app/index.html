@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="VentureFoundry OS portfolio, evidence, risk and decision management application with a PEFY-GG pilot dataset.">
+  <title>VentureFoundry OS · PEFY-GG Pilot</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">VF</span>
+        <div>
+          <strong>VentureFoundry OS™</strong>
+          <small>PEFY-GG controlled pilot</small>
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <button class="nav-item is-active" data-view="command" type="button"><span>01</span>Command Center</button>
+        <button class="nav-item" data-view="portfolio" type="button"><span>02</span>Portfolio</button>
+        <button class="nav-item" data-view="experiments" type="button"><span>03</span>Experiments</button>
+        <button class="nav-item" data-view="risks" type="button"><span>04</span>Risks & Controls</button>
+        <button class="nav-item" data-view="decisions" type="button"><span>05</span>Decision Log</button>
+        <button class="nav-item" data-view="review" type="button"><span>06</span>Weekly Review</button>
+        <button class="nav-item" data-view="settings" type="button"><span>07</span>Data & Settings</button>
+      </nav>
+
+      <div class="sidebar-status">
+        <div class="status-row"><span>Mode</span><strong>Offline-first</strong></div>
+        <div class="status-row"><span>Dataset</span><strong id="datasetVersion">—</strong></div>
+        <div class="status-row"><span>Storage</span><strong id="storageState">Local</strong></div>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="viewEyebrow">Executive portfolio governance</p>
+          <h1 id="viewTitle">Command Center</h1>
+        </div>
+        <div class="topbar-actions">
+          <span class="sync-state" id="saveState" role="status">Saved locally</span>
+          <button class="button button-secondary" id="exportQuick" type="button">Export</button>
+          <button class="button" id="primaryAction" type="button">New portfolio item</button>
+        </div>
+      </header>
+
+      <main id="main" tabindex="-1">
+        <section class="view is-active" id="view-command" data-view-panel="command">
+          <div class="metric-grid" id="metricGrid"></div>
+
+          <div class="grid grid-2">
+            <article class="panel">
+              <div class="panel-heading">
+                <div><p class="kicker">Resource concentration</p><h2>Protected priorities</h2></div>
+                <span class="limit-indicator" id="priorityLimitIndicator">—</span>
+              </div>
+              <div id="protectedPriorities" class="stack-list"></div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-heading">
+                <div><p class="kicker">Decision readiness</p><h2>Portfolio by gate</h2></div>
+              </div>
+              <div id="gateDistribution" class="gate-distribution"></div>
+            </article>
+          </div>
+
+          <div class="grid grid-2">
+            <article class="panel">
+              <div class="panel-heading">
+                <div><p class="kicker">Immediate management attention</p><h2>Next evidence and overdue actions</h2></div>
+              </div>
+              <div id="attentionList" class="stack-list"></div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-heading">
+                <div><p class="kicker">Flagship pilot</p><h2>EL-VECTOR pulse</h2></div>
+                <span class="badge badge-gold">G2</span>
+              </div>
+              <div id="flagshipPulse"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-portfolio" data-view-panel="portfolio">
+          <div class="panel">
+            <div class="table-toolbar">
+              <div class="field grow"><label for="portfolioSearch">Search</label><input id="portfolioSearch" type="search" placeholder="Name, owner, decision or evidence"></div>
+              <div class="field"><label for="portfolioClassFilter">Class</label><select id="portfolioClassFilter"><option value="">All classes</option></select></div>
+              <div class="field"><label for="portfolioRiskFilter">Risk</label><select id="portfolioRiskFilter"><option value="">All risks</option><option>Low</option><option>Moderate</option><option>High</option><option>Critical</option></select></div>
+              <div class="field"><label for="portfolioGateFilter">Gate</label><select id="portfolioGateFilter"><option value="">All gates</option></select></div>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>Initiative</th><th>Class / Gate</th><th>Decision score</th><th>Risk</th><th>Current decision</th><th>Next evidence</th><th>Owner</th><th></th></tr></thead>
+                <tbody id="portfolioTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-experiments" data-view-panel="experiments">
+          <div class="section-intro">
+            <div><p class="kicker">Evidence engine</p><h2>Every experiment must change a decision</h2></div>
+            <div class="segmented" role="group" aria-label="Experiment status filter">
+              <button class="is-active" type="button" data-experiment-filter="all">All</button>
+              <button type="button" data-experiment-filter="planned">Planned</button>
+              <button type="button" data-experiment-filter="running">Running</button>
+              <button type="button" data-experiment-filter="completed">Completed</button>
+            </div>
+          </div>
+          <div id="experimentBoard" class="card-grid"></div>
+        </section>
+
+        <section class="view" id="view-risks" data-view-panel="risks">
+          <div class="panel">
+            <div class="panel-heading">
+              <div><p class="kicker">Residual exposure</p><h2>Risk and control register</h2></div>
+              <p class="helper">Score = likelihood × impact. Scores 16–20 require gate hold; 21–25 require immediate stop and escalation.</p>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>Risk</th><th>Category</th><th>Score</th><th>Control</th><th>Owner</th><th>Status</th><th></th></tr></thead>
+                <tbody id="riskTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-decisions" data-view-panel="decisions">
+          <div class="timeline" id="decisionTimeline"></div>
+        </section>
+
+        <section class="view" id="view-review" data-view-panel="review">
+          <div class="grid grid-review">
+            <article class="panel">
+              <div class="panel-heading"><div><p class="kicker">Automated preparation</p><h2>Weekly management brief</h2></div><button class="button button-secondary" id="copyBrief" type="button">Copy brief</button></div>
+              <div id="weeklyBrief" class="brief"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-heading"><div><p class="kicker">Commitment discipline</p><h2>Review checklist</h2></div></div>
+              <form id="reviewChecklist" class="checklist">
+                <label><input type="checkbox" data-review-check="evidence"> Evidence and metrics updated</label>
+                <label><input type="checkbox" data-review-check="commitments"> Previous commitments reviewed</label>
+                <label><input type="checkbox" data-review-check="assumption"> Highest-risk assumption identified</label>
+                <label><input type="checkbox" data-review-check="priorities"> Maximum three next priorities approved</label>
+                <label><input type="checkbox" data-review-check="finance"> Spend, commitments and runway reviewed</label>
+                <label><input type="checkbox" data-review-check="risk"> Risks, incidents and blockers escalated</label>
+                <label><input type="checkbox" data-review-check="decisions"> Continue, change, stop or scale decisions recorded</label>
+              </form>
+              <div class="completion"><span id="reviewCompletion">0%</span><div class="progress"><span id="reviewProgress"></span></div></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-settings" data-view-panel="settings">
+          <div class="grid grid-2">
+            <article class="panel">
+              <div class="panel-heading"><div><p class="kicker">Controlled portability</p><h2>Import and export</h2></div></div>
+              <p class="helper">The application stores changes in this browser. Export JSON for backup, review or movement to another controlled environment.</p>
+              <div class="action-stack">
+                <button class="button" id="exportJson" type="button">Export complete JSON</button>
+                <button class="button button-secondary" id="exportPortfolioCsv" type="button">Export portfolio CSV</button>
+                <label class="button button-secondary file-button">Import JSON<input id="importJson" type="file" accept="application/json,.json"></label>
+                <button class="button button-danger" id="resetData" type="button">Reset to PEFY-GG pilot data</button>
+              </div>
+            </article>
+            <article class="panel">
+              <div class="panel-heading"><div><p class="kicker">Environment</p><h2>Data governance status</h2></div></div>
+              <dl class="definition-list" id="governanceStatus"></dl>
+              <div class="notice notice-warning"><strong>Public-safe demonstration only.</strong> Do not enter client-confidential, personal, privileged, security-sensitive or unpublished financial information into a public deployment.</div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog id="entityDialog">
+    <form method="dialog" id="entityForm">
+      <div class="dialog-heading"><div><p class="kicker" id="dialogKicker">Record</p><h2 id="dialogTitle">Add record</h2></div><button class="icon-button" value="cancel" aria-label="Close" type="submit">×</button></div>
+      <div id="dialogFields" class="dialog-fields"></div>
+      <div class="dialog-actions"><button class="button button-secondary" value="cancel" type="submit">Cancel</button><button class="button" id="dialogSave" value="default" type="submit">Save record</button></div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js" type="module"></script>
+</body>
+</html>
