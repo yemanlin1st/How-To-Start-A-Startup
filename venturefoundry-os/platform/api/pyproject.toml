@@ -1,0 +1,30 @@
+[project]
+name = "venturefoundry-api"
+version = "1.0.0"
+description = "Multi-tenant VentureFoundry OS API for PEFY-GG portfolio governance"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi==0.116.1",
+  "uvicorn[standard]==0.35.0",
+  "asyncpg==0.30.0",
+  "pydantic-settings==2.10.1",
+  "PyJWT==2.10.1",
+  "orjson==3.11.1"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==8.4.1",
+  "httpx==0.28.1",
+  "ruff==0.12.7"
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
