@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Any
@@ -8,6 +9,23 @@ import asyncpg
 
 from .config import Settings
 from .security import AuthContext
+
+
+async def configure_connection(connection: asyncpg.Connection) -> None:
+    await connection.set_type_codec(
+        "json",
+        schema="pg_catalog",
+        encoder=json.dumps,
+        decoder=json.loads,
+        format="text",
+    )
+    await connection.set_type_codec(
+        "jsonb",
+        schema="pg_catalog",
+        encoder=json.dumps,
+        decoder=json.loads,
+        format="text",
+    )
 
 
 class Database:
@@ -24,6 +42,7 @@ class Database:
             max_size=self.settings.vf_db_pool_max,
             command_timeout=self.settings.vf_request_timeout_seconds,
             server_settings={"application_name": "venturefoundry-api"},
+            init=configure_connection,
         )
 
     async def disconnect(self) -> None:
