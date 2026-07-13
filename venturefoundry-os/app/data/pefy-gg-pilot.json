@@ -1,0 +1,209 @@
+{
+  "meta": {
+    "name": "PEFY-GG VentureFoundry Pilot",
+    "version": "1.0.0",
+    "status": "controlled-pilot",
+    "updated": "2026-07-13",
+    "confidentiality": "public-safe demonstration data"
+  },
+  "settings": {
+    "protectedPriorityLimit": 3,
+    "currency": "XOF",
+    "reviewCadence": "weekly",
+    "gates": ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7"]
+  },
+  "portfolio": [
+    {
+      "id": "PGG-CORE",
+      "name": "PEFY-GG Core Operating Platform",
+      "class": "Operating Backbone",
+      "gate": "G0",
+      "owner": "Executive Sponsor",
+      "protected": true,
+      "risk": "Moderate",
+      "decision": "Fund and sequence",
+      "scores": {"strategicFit": 5, "problemSeverity": 5, "marketAccess": 5, "valueEvidence": 4, "customerCommitment": 5, "feasibility": 3, "economicViability": 4, "executionCapacity": 3, "trust": 4, "scalability": 5},
+      "confidence": 0.75,
+      "riskModifier": 0.90,
+      "nextEvidence": "Approved architecture, process owners, phased budget and first live management dashboard",
+      "reviewDate": "2026-07-27"
+    },
+    {
+      "id": "PGG-CONSULT",
+      "name": "PEFY-GG Consulting and Assurance Offers",
+      "class": "Cash and Credibility Engine",
+      "gate": "G5",
+      "owner": "Commercial Lead",
+      "protected": true,
+      "risk": "Low",
+      "decision": "Standardize and grow",
+      "scores": {"strategicFit": 5, "problemSeverity": 5, "marketAccess": 4, "valueEvidence": 5, "customerCommitment": 4, "feasibility": 5, "economicViability": 4, "executionCapacity": 4, "trust": 5, "scalability": 3},
+      "confidence": 0.85,
+      "riskModifier": 1.00,
+      "nextEvidence": "Offer catalogue, pricing floor, delivery margin, CRM pipeline and reference evidence",
+      "reviewDate": "2026-07-27"
+    },
+    {
+      "id": "ELV-001",
+      "name": "EL-VECTOR",
+      "class": "Flagship Scalable Venture",
+      "gate": "G2",
+      "owner": "EL-VECTOR Venture Owner",
+      "protected": true,
+      "risk": "Moderate",
+      "decision": "Intensive 90-day pilot",
+      "scores": {"strategicFit": 5, "problemSeverity": 5, "marketAccess": 4, "valueEvidence": 4, "customerCommitment": 3, "feasibility": 4, "economicViability": 3, "executionCapacity": 4, "trust": 4, "scalability": 5},
+      "confidence": 0.75,
+      "riskModifier": 0.90,
+      "nextEvidence": "Signed pilot, representative users, priced offer, operational baseline and security validation",
+      "reviewDate": "2026-07-20"
+    },
+    {
+      "id": "DOKPE-001",
+      "name": "DƆKPƐ 360",
+      "class": "Strategic Option / Internal Capability",
+      "gate": "G2",
+      "owner": "Portfolio Steering Committee",
+      "protected": false,
+      "risk": "Moderate",
+      "decision": "Integrate before standalone scale",
+      "scores": {"strategicFit": 4, "problemSeverity": 4, "marketAccess": 2, "valueEvidence": 3, "customerCommitment": 2, "feasibility": 3, "economicViability": 2, "executionCapacity": 3, "trust": 4, "scalability": 3},
+      "confidence": 0.65,
+      "riskModifier": 0.90,
+      "nextEvidence": "Internal adoption evidence, overlap removal and measurable project-management benefit",
+      "reviewDate": "2026-08-10"
+    },
+    {
+      "id": "SCPRO-001",
+      "name": "SCPro OMNIA 360",
+      "class": "Strategic Option",
+      "gate": "G1",
+      "owner": "Venture Owner",
+      "protected": false,
+      "risk": "High",
+      "decision": "Hold for focused validation",
+      "scores": {"strategicFit": 4, "problemSeverity": 4, "marketAccess": 3, "valueEvidence": 2, "customerCommitment": 2, "feasibility": 3, "economicViability": 2, "executionCapacity": 2, "trust": 3, "scalability": 4},
+      "confidence": 0.65,
+      "riskModifier": 0.75,
+      "nextEvidence": "Narrow target segment, employer commitment, placement evidence and operating economics",
+      "reviewDate": "2026-09-30"
+    },
+    {
+      "id": "EULYONIS-001",
+      "name": "EULYONIS OMNIA OS",
+      "class": "Strategic Option",
+      "gate": "G1",
+      "owner": "Venture Owner",
+      "protected": false,
+      "risk": "High",
+      "decision": "Hold and partner-validate",
+      "scores": {"strategicFit": 5, "problemSeverity": 4, "marketAccess": 2, "valueEvidence": 3, "customerCommitment": 1, "feasibility": 3, "economicViability": 2, "executionCapacity": 2, "trust": 2, "scalability": 5},
+      "confidence": 0.50,
+      "riskModifier": 0.75,
+      "nextEvidence": "Regulatory pathway, licensed partners, target-country pilot commitment and unit economics",
+      "reviewDate": "2026-09-30"
+    },
+    {
+      "id": "JAKOYA-001",
+      "name": "JAKOYA 360",
+      "class": "Strategic Option",
+      "gate": "G1",
+      "owner": "Venture Owner",
+      "protected": false,
+      "risk": "High",
+      "decision": "Hold and partner-validate",
+      "scores": {"strategicFit": 4, "problemSeverity": 4, "marketAccess": 2, "valueEvidence": 3, "customerCommitment": 1, "feasibility": 3, "economicViability": 2, "executionCapacity": 2, "trust": 2, "scalability": 5},
+      "confidence": 0.50,
+      "riskModifier": 0.75,
+      "nextEvidence": "Telecom partner commitment, regulatory feasibility, technical proof and enterprise demand",
+      "reviewDate": "2026-09-30"
+    }
+  ],
+  "experiments": [
+    {
+      "id": "ELV-EXP-001",
+      "ventureId": "ELV-001",
+      "title": "Confirm fragmented OHSE workflow pain",
+      "assumption": "Multi-site OHSE teams lose material time and control because risks, evidence and actions are fragmented across paper, email and spreadsheets.",
+      "owner": "OHSE Domain Lead",
+      "status": "planned",
+      "dueDate": "2026-07-24",
+      "passThreshold": "At least 12 of 15 relevant interviews confirm material recurring pain and at least 3 workflows are observed or reconstructed.",
+      "decisionOnPass": "Advance problem validation and prototype the evidence-to-action loop.",
+      "decisionOnFail": "Narrow the target segment or stop the thesis.",
+      "evidence": []
+    },
+    {
+      "id": "ELV-EXP-002",
+      "ventureId": "ELV-001",
+      "title": "Validate the smallest valuable workflow",
+      "assumption": "Users value a controlled risk-action-evidence-closure loop more than a broad static document repository.",
+      "owner": "Product Lead",
+      "status": "planned",
+      "dueDate": "2026-08-05",
+      "passThreshold": "At least 80% of representative users complete five critical prototype tasks and prefer the operational loop.",
+      "decisionOnPass": "Freeze the MVP boundary around the validated loop.",
+      "decisionOnFail": "Redesign the workflow before development.",
+      "evidence": []
+    },
+    {
+      "id": "ELV-EXP-003",
+      "ventureId": "ELV-001",
+      "title": "Secure a formal pilot commitment",
+      "assumption": "A target organization will commit named users, operating access and a commercial or equivalent formal pilot authorization.",
+      "owner": "Commercial Lead",
+      "status": "planned",
+      "dueDate": "2026-08-15",
+      "passThreshold": "Signed pilot, purchase commitment, deposit or formally authorized controlled deployment.",
+      "decisionOnPass": "Build and release the minimum reliable pilot.",
+      "decisionOnFail": "Hold development and revisit buyer, segment or offer.",
+      "evidence": []
+    }
+  ],
+  "risks": [
+    {
+      "id": "ELV-R-001",
+      "ventureId": "ELV-001",
+      "category": "Portfolio",
+      "description": "EL-VECTOR scope expands before the critical workflow is validated.",
+      "likelihood": 4,
+      "impact": 4,
+      "control": "MVP exclusion list, change gate and sponsor approval for scope additions.",
+      "owner": "Venture Owner",
+      "status": "open"
+    },
+    {
+      "id": "ELV-R-002",
+      "ventureId": "ELV-001",
+      "category": "Commercial",
+      "description": "Pilot users show interest but the budget owner does not commit.",
+      "likelihood": 3,
+      "impact": 5,
+      "control": "Separate user, sponsor, buyer and procurement discovery; require behavioural commitment before build.",
+      "owner": "Commercial Lead",
+      "status": "open"
+    },
+    {
+      "id": "ELV-R-003",
+      "ventureId": "ELV-001",
+      "category": "Security and Privacy",
+      "description": "Pilot data or evidence is exposed through weak tenant or access controls.",
+      "likelihood": 2,
+      "impact": 5,
+      "control": "Least privilege, tenant isolation test, access review, secure evidence storage and incident process.",
+      "owner": "Technology Lead",
+      "status": "open"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "date": "2026-07-13",
+      "scope": "PEFY-GG Portfolio",
+      "decision": "Limit protected leadership priorities to the core operating platform, cash-engine standardization and EL-VECTOR pilot.",
+      "owner": "Executive Sponsor",
+      "status": "proposed",
+      "rationale": "Concentrate scarce capacity and prevent simultaneous full builds across strategic options."
+    }
+  ]
+}
