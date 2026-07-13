@@ -4,7 +4,11 @@
 
 This repository preserves the original **How to Start a Startup** lecture archive and extends it with an execution-ready system for turning ideas into governed, measurable and scalable ventures.
 
-The historical material remains available in the numbered lecture folders. The new operating layer is located in [`venturefoundry-os/`](venturefoundry-os/README.md), and the executable pilot application is in [`venturefoundry-os/app/`](venturefoundry-os/app/README.md).
+The modernization now has three operational layers:
+
+1. [`venturefoundry-os/`](venturefoundry-os/README.md) — management system, decision gates and evidence doctrine;
+2. [`venturefoundry-os/app/`](venturefoundry-os/app/README.md) — offline-first executive pilot application;
+3. [`venturefoundry-os/platform/`](venturefoundry-os/platform/README.md) — multi-tenant production foundation with API, PostgreSQL/RLS, RBAC, audit controls and Docker deployment.
 
 ## Why this modernization exists
 
@@ -25,7 +29,7 @@ VentureFoundry OS adds those mechanisms while keeping the source learning materi
 
 ## Executable application
 
-The repository now includes an offline-first web application with:
+The offline-first web application includes:
 
 - executive portfolio command center;
 - G0–G7 venture and initiative classification;
@@ -37,10 +41,43 @@ The repository now includes an offline-first web application with:
 - PEFY-GG and EL-VECTOR pilot data;
 - CI validation for data, references, policy limits and application syntax.
 
-Run locally:
+Run the lightweight pilot locally:
 
 ```bash
 python3 -m http.server 8080 --directory venturefoundry-os/app
+```
+
+Then open `http://localhost:8080`.
+
+## Production platform
+
+The deployable platform adds:
+
+- FastAPI service with validated contracts;
+- signed JWT identity context;
+- role-based authorization;
+- active organization-membership verification;
+- PostgreSQL system of record;
+- row-level tenant isolation;
+- database-enforced role policies;
+- three-priority portfolio constraint;
+- append-only audit events;
+- evidence metadata and integrity hashes;
+- review-cycle records;
+- hardened Nginx reverse proxy;
+- separate database administrator and constrained application role;
+- Docker Compose deployment;
+- live database migration, RLS and governance acceptance tests.
+
+Run the full stack:
+
+```bash
+cp venturefoundry-os/platform/.env.example venturefoundry-os/platform/.env
+# Replace every CHANGE_ME value.
+docker compose \
+  --env-file venturefoundry-os/platform/.env \
+  -f venturefoundry-os/platform/docker-compose.yml \
+  up --build
 ```
 
 Then open `http://localhost:8080`.
@@ -60,16 +97,27 @@ Then open `http://localhost:8080`.
 
 ## First implementation: PEFY-GG
 
-The first reference implementation applies the system to **PEFY-GG** as a diversified innovation and services group. The pilot is intentionally public-safe: it demonstrates portfolio governance, prioritization and execution without publishing confidential client or proprietary operational data.
+The first reference implementation applies the system to **PEFY-GG** as a diversified innovation and services group. The public repository contains only public-safe demonstration records. Confidential operational evidence must be handled in a controlled private deployment.
 
 Start here:
 
+- [`Production Platform`](venturefoundry-os/platform/README.md)
 - [`Executable VentureFoundry Application`](venturefoundry-os/app/README.md)
 - [`PEFY-GG Pilot Blueprint`](venturefoundry-os/examples/PEFY-GG/PEFY-GG_PILOT.md)
 - [`PEFY-GG 90-Day Activation Plan`](venturefoundry-os/examples/PEFY-GG/90-DAY_ACTIVATION_PLAN.md)
 - [`Pilot Execution Checklist`](venturefoundry-os/examples/PEFY-GG/PILOT_EXECUTION_CHECKLIST.md)
 - [`Static Portfolio Dashboard`](venturefoundry-os/examples/PEFY-GG/dashboard.html)
 - [`Priority Register`](venturefoundry-os/examples/PEFY-GG/priority-register.csv)
+
+## PEFY-GG portfolio doctrine
+
+The first controlled cycle protects only three group priorities:
+
+1. PEFY-GG Core Operating Platform;
+2. consulting and assurance cash-engine standardization;
+3. EL-VECTOR flagship validation.
+
+Other initiatives remain governed strategic options until their evidence, ownership, capacity and resource gates are passed.
 
 ## System components
 
@@ -80,6 +128,7 @@ Start here:
 - **Management system** — policy, RACI, KPIs, risk register, controls and reviews.
 - **Portfolio command layer** — comparative scoring, resource allocation and stop/continue/scale decisions.
 - **AI execution layer** — research, drafting, analysis and automation under named human accountability.
+- **Assurance layer** — RLS, RBAC, audit events, CI controls and management-review evidence.
 
 ## Design principles
 
@@ -91,10 +140,18 @@ Start here:
 6. Every experiment must change a decision, reduce uncertainty or stop.
 7. Scale only after repeatability is demonstrated.
 8. Preserve institutional knowledge through versioned, auditable records.
+9. Enforce tenant and role boundaries in the database, not only in the interface.
+10. Treat public-safe examples and confidential production evidence as separate information classes.
 
-## Standards alignment
+## Assurance status
 
-The system is designed to be compatible with innovation, quality, risk, information-security and continuity management practices. It does not reproduce proprietary standards text and does not constitute certification advice.
+The automated workflow has three independent gates:
+
+- **Pilot integrity** — application assets, JSON, IDs, score ranges and priority policy;
+- **API contracts** — dependency installation, Python compilation, contracts, unit tests and Compose validation;
+- **Database governance** — live PostgreSQL migrations, constrained role, RLS isolation, viewer denial, priority limit, audit creation and audit mutation denial.
+
+All three gates currently pass.
 
 ## Repository map
 
@@ -103,23 +160,29 @@ The system is designed to be compatible with innovation, quality, risk, informat
 ├── 01-...20-.../                       # Original lecture archive
 ├── RU/                                 # Historical Russian translations
 ├── .github/workflows/
-│   └── venturefoundry-validate.yml     # Automated integrity gate
+│   └── venturefoundry-validate.yml     # Three-gate platform assurance
 └── venturefoundry-os/
     ├── README.md                       # Operating system specification
     ├── STARTUP_SCORECARD.md            # Maturity and gate scoring
     ├── EXPERIMENT_OPERATING_PROCEDURE.md
     ├── GOVERNANCE_RISK_COMPLIANCE.md
-    ├── app/                            # Executable offline-first pilot
-    ├── tools/validate_pilot.py         # Data and application validator
+    ├── app/                            # Offline-first pilot application
+    ├── platform/
+    │   ├── api/                        # Authenticated FastAPI service
+    │   ├── database/                   # PostgreSQL schema, RLS and grants
+    │   ├── tests/                      # Database acceptance tests
+    │   ├── web/                        # Hardened reverse proxy
+    │   └── docker-compose.yml
+    ├── tools/validate_pilot.py
     └── examples/PEFY-GG/               # First implementation case
 ```
 
 ## Status
 
-**Version:** 1.0 executable pilot  
-**Implementation state:** Draft for controlled PEFY-GG validation  
-**Automated validation:** Passing  
-**Next operational proof:** Apply the 90-day cycle to PEFY-GG, capture real evidence and recalibrate thresholds before general rollout.
+**Version:** 1.0 production foundation  
+**Implementation state:** Draft for controlled PEFY-GG deployment and user acceptance  
+**Automated validation:** Three independent gates passing  
+**Next operational proof:** private deployment, identity-provider integration, controlled evidence storage and the 90-day EL-VECTOR cycle.
 
 ---
 
