@@ -4,7 +4,7 @@
 
 This repository preserves the original **How to Start a Startup** lecture archive and extends it with an execution-ready system for turning ideas into governed, measurable and scalable ventures.
 
-The historical material remains available in the numbered lecture folders. The new operating layer is located in [`venturefoundry-os/`](venturefoundry-os/README.md).
+The historical material remains available in the numbered lecture folders. The new operating layer is located in [`venturefoundry-os/`](venturefoundry-os/README.md), and the executable pilot application is in [`venturefoundry-os/app/`](venturefoundry-os/app/README.md).
 
 ## Why this modernization exists
 
@@ -22,6 +22,28 @@ The original course is an important knowledge base, but a venture still needs a 
 - portfolio prioritization and scale-readiness decisions.
 
 VentureFoundry OS adds those mechanisms while keeping the source learning material intact.
+
+## Executable application
+
+The repository now includes an offline-first web application with:
+
+- executive portfolio command center;
+- G0–G7 venture and initiative classification;
+- evidence-adjusted scoring;
+- protected-priority limit controls;
+- experiment, risk and decision registers;
+- automated weekly management brief;
+- local persistence, JSON backup/import and CSV export;
+- PEFY-GG and EL-VECTOR pilot data;
+- CI validation for data, references, policy limits and application syntax.
+
+Run locally:
+
+```bash
+python3 -m http.server 8080 --directory venturefoundry-os/app
+```
+
+Then open `http://localhost:8080`.
 
 ## The operating lifecycle
 
@@ -42,9 +64,11 @@ The first reference implementation applies the system to **PEFY-GG** as a divers
 
 Start here:
 
+- [`Executable VentureFoundry Application`](venturefoundry-os/app/README.md)
 - [`PEFY-GG Pilot Blueprint`](venturefoundry-os/examples/PEFY-GG/PEFY-GG_PILOT.md)
 - [`PEFY-GG 90-Day Activation Plan`](venturefoundry-os/examples/PEFY-GG/90-DAY_ACTIVATION_PLAN.md)
-- [`Interactive Pilot Dashboard`](venturefoundry-os/examples/PEFY-GG/dashboard.html)
+- [`Pilot Execution Checklist`](venturefoundry-os/examples/PEFY-GG/PILOT_EXECUTION_CHECKLIST.md)
+- [`Static Portfolio Dashboard`](venturefoundry-os/examples/PEFY-GG/dashboard.html)
 - [`Priority Register`](venturefoundry-os/examples/PEFY-GG/priority-register.csv)
 
 ## System components
@@ -76,21 +100,26 @@ The system is designed to be compatible with innovation, quality, risk, informat
 
 ```text
 .
-├── 01-...20-.../                  # Original lecture archive
-├── RU/                            # Historical Russian translations
+├── 01-...20-.../                       # Original lecture archive
+├── RU/                                 # Historical Russian translations
+├── .github/workflows/
+│   └── venturefoundry-validate.yml     # Automated integrity gate
 └── venturefoundry-os/
-    ├── README.md                  # Operating system specification
-    ├── STARTUP_SCORECARD.md       # Maturity and gate scoring
+    ├── README.md                       # Operating system specification
+    ├── STARTUP_SCORECARD.md            # Maturity and gate scoring
     ├── EXPERIMENT_OPERATING_PROCEDURE.md
     ├── GOVERNANCE_RISK_COMPLIANCE.md
-    └── examples/PEFY-GG/          # First implementation case
+    ├── app/                            # Executable offline-first pilot
+    ├── tools/validate_pilot.py         # Data and application validator
+    └── examples/PEFY-GG/               # First implementation case
 ```
 
 ## Status
 
-**Version:** 1.0 pilot architecture  
-**Implementation state:** Draft for controlled pilot  
-**Next validation:** Apply the 90-day cycle to PEFY-GG, capture evidence and recalibrate scoring thresholds before general rollout.
+**Version:** 1.0 executable pilot  
+**Implementation state:** Draft for controlled PEFY-GG validation  
+**Automated validation:** Passing  
+**Next operational proof:** Apply the 90-day cycle to PEFY-GG, capture real evidence and recalibrate thresholds before general rollout.
 
 ---
 
