@@ -23,22 +23,19 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          show-progress: false
 
-      - name: Validate pilot data and application integrity
-        run: python venturefoundry-os/tools/validate_pilot.py
-
-      - name: Validate JavaScript syntax
-        run: node --check venturefoundry-os/app/app.js
-
-      - name: Validate service worker syntax
-        run: node --check venturefoundry-os/app/service-worker.js
-
-      - name: Parse JSON assets
+      - name: Run all integrity checks
+        shell: bash
         run: |
-          python -m json.tool venturefoundry-os/app/data/pefy-gg-pilot.json > /dev/null
-          python -m json.tool venturefoundry-os/app/manifest.webmanifest > /dev/null
+          set -euo pipefail
+          echo "=== VentureFoundry data and application validation ==="
+          python3 venturefoundry-os/tools/validate_pilot.py
+          echo "=== JavaScript syntax ==="
+          node --check venturefoundry-os/app/app.js
+          node --check venturefoundry-os/app/service-worker.js
+          echo "=== JSON assets ==="
+          python3 -m json.tool venturefoundry-os/app/data/pefy-gg-pilot.json > /dev/null
+          python3 -m json.tool venturefoundry-os/app/manifest.webmanifest > /dev/null
+          echo "All VentureFoundry checks passed."
