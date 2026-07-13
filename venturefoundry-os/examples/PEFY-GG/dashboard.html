@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PEFY-GG VentureFoundry Command Dashboard</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: #0e1b2d;
+      --panel-2: #13243a;
+      --text: #edf4ff;
+      --muted: #9eb0c8;
+      --line: #27405f;
+      --gold: #d9ad55;
+      --green: #38c98b;
+      --amber: #f0b44d;
+      --red: #ef6a6a;
+      --blue: #6da8ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(145deg, var(--bg), #0b1830 55%, #07111f);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+    }
+    .shell { max-width: 1500px; margin: 0 auto; padding: 28px; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+    .eyebrow { color: var(--gold); font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { margin: 8px 0 6px; font-size: clamp(28px, 4vw, 48px); line-height: 1.05; }
+    .subtitle { color: var(--muted); max-width: 840px; line-height: 1.55; }
+    .version {
+      border: 1px solid var(--line);
+      background: rgba(14, 27, 45, .8);
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .card {
+      background: linear-gradient(160deg, rgba(19,36,58,.95), rgba(14,27,45,.95));
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.18);
+    }
+    .card .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+    .card .value { font-size: 31px; font-weight: 800; margin-top: 7px; }
+    .card .note { color: var(--muted); font-size: 13px; margin-top: 5px; }
+    .accent { color: var(--gold); }
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(250px, 1.5fr) repeat(2, minmax(180px, .7fr)) auto;
+      gap: 12px;
+      align-items: end;
+      background: rgba(14,27,45,.9);
+      border: 1px solid var(--line);
+      border-radius: 16px 16px 0 0;
+      padding: 16px;
+    }
+    label { color: var(--muted); font-size: 12px; font-weight: 700; display: block; margin-bottom: 6px; }
+    input, select, button {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #09172a;
+      color: var(--text);
+      padding: 11px 12px;
+      font: inherit;
+    }
+    button {
+      width: auto;
+      cursor: pointer;
+      background: var(--gold);
+      color: #16120a;
+      border-color: var(--gold);
+      font-weight: 800;
+      min-width: 145px;
+    }
+    button:hover { filter: brightness(1.06); }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-top: 0;
+      border-radius: 0 0 16px 16px;
+      background: rgba(7,17,31,.72);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 1220px; }
+    th, td { padding: 13px 14px; border-bottom: 1px solid rgba(39,64,95,.65); text-align: left; vertical-align: top; }
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #10213a;
+      color: #c5d3e6;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    tbody tr:hover { background: rgba(109,168,255,.06); }
+    .initiative { font-weight: 800; min-width: 230px; }
+    .small { color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      border: 1px solid currentColor;
+      white-space: nowrap;
+    }
+    .good { color: var(--green); background: rgba(56,201,139,.08); }
+    .warn { color: var(--amber); background: rgba(240,180,77,.08); }
+    .risk { color: var(--red); background: rgba(239,106,106,.08); }
+    .info { color: var(--blue); background: rgba(109,168,255,.08); }
+    .score {
+      display: grid;
+      grid-template-columns: 48px 110px;
+      gap: 8px;
+      align-items: center;
+      min-width: 170px;
+    }
+    .bar { height: 8px; background: #07111f; border-radius: 999px; overflow: hidden; border: 1px solid var(--line); }
+    .fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--gold)); }
+    .footer-note { color: var(--muted); margin: 14px 2px 0; font-size: 12px; line-height: 1.5; }
+    .empty { padding: 32px; color: var(--muted); text-align: center; }
+    @media (max-width: 980px) {
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+      header { flex-direction: column; }
+    }
+    @media (max-width: 560px) {
+      .shell { padding: 16px; }
+      .cards, .toolbar { grid-template-columns: 1fr; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <div class="eyebrow">PEFY-GG · VentureFoundry OS™</div>
+        <h1>Portfolio Command Dashboard</h1>
+        <div class="subtitle">A public-safe pilot view for prioritizing operating capabilities, cash engines, the EL-VECTOR flagship venture and strategic options through explicit evidence and decision gates.</div>
+      </div>
+      <div class="version">Pilot architecture · V1.0<br><span class="small">Controlled 90-day activation</span></div>
+    </header>
+
+    <section class="cards" aria-label="Portfolio summary">
+      <article class="card"><div class="label">Portfolio items</div><div class="value" id="totalCount">0</div><div class="note">Backbone, engines and ventures</div></article>
+      <article class="card"><div class="label">Protected priorities</div><div class="value accent" id="priorityCount">0</div><div class="note">Must remain at three or fewer</div></article>
+      <article class="card"><div class="label">High residual risk</div><div class="value" id="highRiskCount">0</div><div class="note">Require hold or executive conditions</div></article>
+      <article class="card"><div class="label">Flagship pilot</div><div class="value" style="font-size:24px">EL-VECTOR</div><div class="note">Narrow OHSE evidence and action loop</div></article>
+    </section>
+
+    <section>
+      <div class="toolbar">
+        <div>
+          <label for="search">Search portfolio</label>
+          <input id="search" type="search" placeholder="Initiative, decision, evidence, owner…" />
+        </div>
+        <div>
+          <label for="classFilter">Portfolio class</label>
+          <select id="classFilter"><option value="">All classes</option></select>
+        </div>
+        <div>
+          <label for="riskFilter">Residual risk</label>
+          <select id="riskFilter">
+            <option value="">All risks</option>
+            <option>Low</option><option>Moderate</option><option>High</option><option>Critical</option>
+          </select>
+        </div>
+        <button id="exportButton" type="button">Export filtered CSV</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Initiative</th><th>Class / Gate</th><th>Evidence score</th><th>Risk</th><th>Decision</th><th>Next required evidence</th><th>Owner / Review</th>
+            </tr>
+          </thead>
+          <tbody id="portfolioBody"></tbody>
+        </table>
+        <div id="emptyState" class="empty" hidden>No portfolio item matches the current filters.</div>
+      </div>
+      <p class="footer-note">Scores are provisional portfolio-screening indicators, not success predictions. Mandatory legal, security, safety, ethics, solvency and evidence-integrity conditions override numerical scores.</p>
+    </section>
+  </main>
+
+  <script>
+    const portfolio = [
+      { initiative: "PEFY-GG Core Operating Platform", className: "Operating Backbone", gate: "G0", scores: [5,5,5,3,4,3], risk: "Moderate", decision: "FUND AND SEQUENCE", evidence: "Approved architecture; process owners; phased budget; first live management dashboard", owner: "Executive Sponsor", review: "Monthly", protected: true },
+      { initiative: "PEFY-GG Consulting and Assurance Offers", className: "Cash and Credibility Engine", gate: "G5", scores: [5,5,4,5,4,4], risk: "Low", decision: "STANDARDIZE AND GROW", evidence: "Offer catalogue; pricing floor; delivery margin; CRM pipeline; reference evidence", owner: "Commercial Lead", review: "Monthly", protected: true },
+      { initiative: "PEFY-LANG Professional Services", className: "Cash and Credibility Engine", gate: "G5", scores: [4,5,4,5,4,4], risk: "Low", decision: "OPTIMIZE FOR CASH", evidence: "Segment profitability; SLA and quality metrics; cross-sell pipeline", owner: "Business Unit Lead", review: "Monthly", protected: false },
+      { initiative: "EL-VECTOR", className: "Flagship Scalable Venture", gate: "G2", scores: [5,5,3,4,3,4], risk: "Moderate", decision: "INTENSIVE 90-DAY PILOT", evidence: "Signed pilot; representative users; priced offer; operational baseline; security validation", owner: "EL-VECTOR Venture Owner", review: "Weekly", protected: true },
+      { initiative: "DƆKPƐ 360", className: "Strategic Option / Internal Capability", gate: "G2", scores: [4,4,2,3,2,3], risk: "Moderate", decision: "INTEGRATE BEFORE STANDALONE SCALE", evidence: "Prove internal use; remove overlap with core platform; measurable project-management benefit", owner: "Portfolio Steering Committee", review: "Monthly", protected: false },
+      { initiative: "SCPro OMNIA 360", className: "Strategic Option", gate: "G1", scores: [4,4,2,3,2,2], risk: "High", decision: "HOLD FOR FOCUSED VALIDATION", evidence: "Narrow target segment; employer commitment; placement evidence; operating economics", owner: "Venture Owner", review: "Quarterly", protected: false },
+      { initiative: "EULYONIS OMNIA OS", className: "Strategic Option", gate: "G1", scores: [5,4,1,3,2,2], risk: "High", decision: "HOLD AND PARTNER VALIDATE", evidence: "Regulatory pathway; licensed partners; target-country pilot commitment; trust and unit economics", owner: "Venture Owner", review: "Quarterly", protected: false },
+      { initiative: "JAKOYA 360", className: "Strategic Option", gate: "G1", scores: [4,4,1,3,2,2], risk: "High", decision: "HOLD AND PARTNER VALIDATE", evidence: "Telecom/VAS partner commitment; regulatory feasibility; technical proof; enterprise demand", owner: "Venture Owner", review: "Quarterly", protected: false },
+      { initiative: "LYSCOM 360", className: "Strategic Option", gate: "G1", scores: [4,4,2,3,2,2], risk: "High", decision: "VALIDATE OPERATING CONTRACT FIRST", evidence: "Anchor client; workforce plan; telecom infrastructure costs; 12-month cash model", owner: "Venture Owner", review: "Quarterly", protected: false },
+      { initiative: "Media, Commerce, Mobility and Education Initiatives", className: "Strategic Options", gate: "G0", scores: [3,2,1,2,1,2], risk: "Moderate", decision: "ARCHIVE OR TIMEBOX", evidence: "One-page charter; named owner; next cheapest evidence; expiry date", owner: "Portfolio Steering Committee", review: "Quarterly", protected: false },
+      { initiative: "Foundation and Social Impact Initiatives", className: "Impact Portfolio", gate: "G0", scores: [5,3,2,3,2,3], risk: "Moderate", decision: "SEPARATE IMPACT GOVERNANCE", evidence: "Impact thesis; beneficiaries; funding model; safeguarding; measurable outcomes", owner: "Foundation Governance Lead", review: "Quarterly", protected: false }
+    ];
+
+    const body = document.getElementById("portfolioBody");
+    const emptyState = document.getElementById("emptyState");
+    const search = document.getElementById("search");
+    const classFilter = document.getElementById("classFilter");
+    const riskFilter = document.getElementById("riskFilter");
+
+    const avgScore = item => Math.round(item.scores.reduce((a,b) => a+b, 0) / (item.scores.length * 5) * 100);
+    const badgeClass = risk => risk === "Low" ? "good" : risk === "Moderate" ? "warn" : "risk";
+    const decisionClass = decision => /GROW|PILOT|FUND/.test(decision) ? "good" : /HOLD|ARCHIVE|TIMEBOX/.test(decision) ? "warn" : "info";
+
+    function populateFilters() {
+      [...new Set(portfolio.map(x => x.className))].sort().forEach(value => {
+        const option = document.createElement("option");
+        option.value = option.textContent = value;
+        classFilter.appendChild(option);
+      });
+    }
+
+    function filteredRows() {
+      const q = search.value.trim().toLowerCase();
+      return portfolio.filter(item => {
+        const text = Object.values(item).join(" ").toLowerCase();
+        return (!q || text.includes(q)) && (!classFilter.value || item.className === classFilter.value) && (!riskFilter.value || item.risk === riskFilter.value);
+      });
+    }
+
+    function render() {
+      const rows = filteredRows();
+      body.innerHTML = "";
+      rows.forEach(item => {
+        const score = avgScore(item);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><div class="initiative">${item.initiative}</div><div class="small">${item.protected ? "Protected priority" : "Controlled portfolio item"}</div></td>
+          <td><span class="badge info">${item.gate}</span><div class="small" style="margin-top:7px">${item.className}</div></td>
+          <td><div class="score"><strong>${score}%</strong><div class="bar"><div class="fill" style="width:${score}%"></div></div></div><div class="small">Provisional evidence readiness</div></td>
+          <td><span class="badge ${badgeClass(item.risk)}">${item.risk}</span></td>
+          <td><span class="badge ${decisionClass(item.decision)}">${item.decision}</span></td>
+          <td class="small">${item.evidence}</td>
+          <td><strong>${item.owner}</strong><div class="small">${item.review} review</div></td>`;
+        body.appendChild(tr);
+      });
+      emptyState.hidden = rows.length > 0;
+      document.getElementById("totalCount").textContent = portfolio.length;
+      document.getElementById("priorityCount").textContent = portfolio.filter(x => x.protected).length;
+      document.getElementById("highRiskCount").textContent = portfolio.filter(x => x.risk === "High" || x.risk === "Critical").length;
+    }
+
+    function exportCsv() {
+      const headers = ["Initiative","Portfolio Class","Gate","Evidence Score","Residual Risk","Decision","Next Required Evidence","Decision Owner","Review Cycle"];
+      const escape = value => `"${String(value).replaceAll('"','""')}"`;
+      const lines = [headers.map(escape).join(",")];
+      filteredRows().forEach(item => lines.push([
+        item.initiative, item.className, item.gate, `${avgScore(item)}%`, item.risk, item.decision, item.evidence, item.owner, item.review
+      ].map(escape).join(",")));
+      const blob = new Blob([lines.join("\n")], {type: "text/csv;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "pefy-gg-venturefoundry-filtered.csv";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    [search, classFilter, riskFilter].forEach(el => el.addEventListener("input", render));
+    document.getElementById("exportButton").addEventListener("click", exportCsv);
+    populateFilters();
+    render();
+  </script>
+</body>
+</html>
